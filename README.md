@@ -33,22 +33,22 @@ La aplicación queda disponible en `http://localhost:4200`.
 
 ## Supuestos y decisiones técnicas
 
-**Clientes individuales únicamente:** la vista vw_ClientesCompras filtra solo clientes con PersonID (personas físicas). Los clientes empresa tienen PersonID = NULL en AdventureWorks y no cuentan con nombre de persona asociado.
-**Clasificación en backend:** calcula dinámicamente al responder la API, evitando duplicar lógica en la base de datos. Los umbrales son: Bronze < $5,000 · Silver $5,000–$50,000 · Gold > $50,000.
-**Soft delete:** el campo IsDeleted marca registros eliminados sin borrarlos físicamente, preservando trazabilidad.
-**Paginación configurable:** se agregó paginación para evitar cargar el total de ~19,000 clientes de AdventureWorks en una sola petición.
+- **Clientes individuales únicamente:** la vista vw_ClientesCompras filtra solo clientes con PersonID (personas físicas). Los clientes empresa tienen PersonID = NULL en AdventureWorks y no cuentan con nombre de persona asociado.
+- **Clasificación en backend:** calcula dinámicamente al responder la API, evitando duplicar lógica en la base de datos. Los umbrales son: Bronze < $5,000 · Silver $5,000–$50,000 · Gold > $50,000.
+- **Soft delete:** el campo IsDeleted marca registros eliminados sin borrarlos físicamente, preservando trazabilidad.
+- **Paginación configurable:** se agregó paginación para evitar cargar el total de ~19,000 clientes de AdventureWorks en una sola petición.
 
 ---
 
 ### ¿Qué mejoraría si esto fuera a producción?
 
-**1:** agregar JWT o similares para proteger todos los endpoints. Actualmente la API es pública.
-**2:** configurar certificado TLS y forzar conexiones seguras.
-**3:** sacar credenciales de .env hacia un gestor de secretos (AWS Secrets Manager, Azure Key Vault).
-**4:** implementar un Handler global en Laravel que devuelva siempre una estructura JSON con códigos de error descriptivos para mejor manejo en front.
-**5:** añadir workers para eficientar el flujo y UX del sistema en tareas de segundo plano y tiempo real.
-**6:** mejorar consultas sql para mayor escalabilidad con grandes volúmenes de datos.
-**7:** asegurarse que el sistema sea compatible con múltiples navegadores y sistemas operativos.
+- **1:** agregar JWT o similares para proteger todos los endpoints. Actualmente la API es pública.
+- **2:** configurar certificado TLS y forzar conexiones seguras.
+- **3:** sacar credenciales de .env hacia un gestor de secretos (AWS Secrets Manager, Azure Key Vault).
+- **4:** implementar un Handler global en Laravel que devuelva siempre una estructura JSON con códigos de error descriptivos para mejor manejo en front.
+- **5:** añadir workers para eficientar el flujo y UX del sistema en tareas de segundo plano y tiempo real.
+- **6:** mejorar consultas sql para mayor escalabilidad con grandes volúmenes de datos.
+- **7:** asegurarse que el sistema sea compatible con múltiples navegadores y sistemas operativos.
 
 ### Validaciones adicionales que agregaría
 
@@ -61,10 +61,10 @@ La aplicación queda disponible en `http://localhost:4200`.
 
 ### ¿Cómo escalaría la solución?
 
-**Base de datos:** agregar índices en Sales.SalesOrderHeader.CustomerID y Sales.SalesOrderHeader.OrderDate, que son las columnas más consultadas por los filtros. Considerar una vista indexada si el volumen de datos crece significativamente.
-**Backend:** desplegar un balanceador de carga con múltiples instancias para facilitar el escalado horizontal.
-**Caché:** guardar los resultados de vw_ClientesCompras con TTL corto (5–10 min) para reducir carga en SQL Server ante consultas repetidas.
-**PokeAPI:** cachear las respuestas en Redis para no depender de la disponibilidad de un servicio externo en cada petición.
+- **Base de datos:** agregar índices en Sales.SalesOrderHeader.CustomerID y Sales.SalesOrderHeader.OrderDate, que son las columnas más consultadas por los filtros. Considerar una vista indexada si el volumen de datos crece significativamente.
+- **Backend:** desplegar un balanceador de carga con múltiples instancias para facilitar el escalado horizontal.
+- **Caché:** guardar los resultados de vw_ClientesCompras con TTL corto (5–10 min) para reducir carga en SQL Server ante consultas repetidas.
+- **PokeAPI:** cachear las respuestas en Redis para no depender de la disponibilidad de un servicio externo en cada petición.
 
 ### ¿Qué partes moverías a servicios, colas o jobs programados?
 
