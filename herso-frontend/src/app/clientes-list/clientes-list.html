@@ -1,0 +1,125 @@
+<div class="container">
+
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Clientes</h2>
+      <p class="page-subtitle">Historial de compras y clasificación comercial</p>
+    </div>
+    @if (!cargando && clientes.length > 0) {
+      <span class="results-count">{{ totalRegistros | number }} registros</span>
+    }
+  </div>
+
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <mat-icon matPrefix>person_search</mat-icon>
+          <input matInput [formControl]="nombreCtrl" placeholder="Buscar por nombre" maxlength="45" #nombreInput>
+          <mat-hint align="end">{{ nombreInput.value.length }}/45</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha inicio</mat-label>
+          <input matInput type="date" [formControl]="fechaInicioCtrl">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha fin</mat-label>
+          <input matInput type="date" [formControl]="fechaFinCtrl">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Monto total mínimo ($)</mat-label>
+          <input matInput [formControl]="montoMinCtrl" placeholder="0" (input)="formatearMonto($event)" inputmode="numeric">
+        </mat-form-field>
+
+        <div class="filter-actions">
+          <button mat-flat-button (click)="buscarExplicito()">
+            <mat-icon>search</mat-icon> Buscar
+          </button>
+          <button mat-button (click)="limpiar()">
+            <mat-icon>clear</mat-icon> Limpiar
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <mat-card-content>
+      @if (cargando) {
+        <div class="center-content">
+          <mat-spinner diameter="48"></mat-spinner>
+        </div>
+      } @else if (clientes.length === 0) {
+        <div class="center-content">
+          <mat-icon class="empty-icon">inbox</mat-icon>
+          <p>No se encontraron clientes.</p>
+        </div>
+      } @else {
+        <table mat-table [dataSource]="clientes" class="full-width">
+
+          <ng-container matColumnDef="NombreCliente">
+            <th mat-header-cell *matHeaderCellDef>Cliente</th>
+            <td mat-cell *matCellDef="let c">
+              <div class="client-cell">
+                <div class="avatar tier-{{ c.Clasificacion | lowercase }}">{{ c.NombreCliente[0] }}</div>
+                <span class="client-name">{{ c.NombreCliente }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Clasificacion">
+            <th mat-header-cell *matHeaderCellDef>Nivel</th>
+            <td mat-cell *matCellDef="let c">
+              <span class="badge badge-{{ c.Clasificacion | lowercase }}">{{ c.Clasificacion }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="UltimaCompra">
+            <th mat-header-cell *matHeaderCellDef>Última compra</th>
+            <td mat-cell *matCellDef="let c" class="date-cell">{{ c.UltimaCompra | date:'dd MMM yyyy' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="TotalOrdenes">
+            <th mat-header-cell *matHeaderCellDef class="num-header">Órdenes</th>
+            <td mat-cell *matCellDef="let c" class="num-cell">{{ c.TotalOrdenes }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="MontoTotal">
+            <th mat-header-cell *matHeaderCellDef class="num-header">Monto total</th>
+            <td mat-cell *matCellDef="let c" class="num-cell">{{ c.MontoTotal | currency }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="MontoPromedio">
+            <th mat-header-cell *matHeaderCellDef class="num-header">Promedio / orden</th>
+            <td mat-cell *matCellDef="let c" class="num-cell">{{ c.MontoPromedio | currency }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let c" class="actions-cell">
+              <button mat-icon-button [routerLink]="['/clientes', c.CustomerID]" matTooltip="Ver detalle">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+          <tr mat-row *matRowDef="let row; columns: columnas;" class="row-hover"></tr>
+        </table>
+
+        <mat-paginator
+          [length]="totalRegistros"
+          [pageSize]="porPagina"
+          [pageSizeOptions]="[10, 20, 30, 40, 50]"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
+      }
+    </mat-card-content>
+  </mat-card>
+
+</div>

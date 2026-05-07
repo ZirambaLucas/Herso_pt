@@ -1,0 +1,136 @@
+<div class="container">
+  <button mat-button (click)="volver()">
+    <mat-icon>arrow_back</mat-icon> Volver
+  </button>
+
+  @if (cargando) {
+    <div class="center-content">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+  } @else if (cliente) {
+
+    <!-- Hero card con Pokémon -->
+    <div class="cliente-hero tier-{{ cliente.Clasificacion | lowercase }}">
+      <div class="hero-info">
+        <span class="badge">{{ cliente.Clasificacion }}</span>
+        <h2 class="hero-nombre">{{ cliente.NombreCliente }}</h2>
+        <p class="hero-id">Cliente #{{ cliente.CustomerID }}</p>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-label">Última compra</span>
+            <span class="stat-value">{{ cliente.UltimaCompra | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Órdenes</span>
+            <span class="stat-value">{{ cliente.TotalOrdenes }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Monto total</span>
+            <span class="stat-value">{{ cliente.MontoTotal | currency }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Promedio/orden</span>
+            <span class="stat-value">{{ cliente.MontoPromedio | currency }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-pokemon">
+        @if (pokemonCargando) {
+          <mat-spinner diameter="40" class="pokemon-spinner"></mat-spinner>
+        } @else {
+          <div class="pokemon-flip">
+            <div class="pokemon-flip-inner">
+
+              <div class="pokemon-flip-front">
+                <div class="pokemon-orbe"></div>
+                <img [src]="pokemonSvc.artworkUrl(pokemonId)"
+                     [alt]="pokemonNombre"
+                     class="pokemon-artwork">
+              </div>
+
+              <div class="pokemon-flip-back">
+                <span class="flip-label">Tipo</span>
+                <div class="tipos-lista">
+                  @for (tipo of pokemonTipos; track tipo) {
+                    <span class="tipo-chip tipo-{{ tipo }}">{{ tipo }}</span>
+                  }
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <span class="pokemon-nombre">{{ pokemonNombre }}</span>
+          <span class="pokemon-num">#{{ pokemonId }}</span>
+        }
+      </div>
+    </div>
+
+    <!-- Seguimientos -->
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Seguimientos comerciales</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="table-actions">
+          <button mat-flat-button (click)="abrirFormulario()">
+            <mat-icon>add</mat-icon> Nuevo seguimiento
+          </button>
+        </div>
+
+        @if (seguimientos.length === 0) {
+          <p class="sin-registros">No hay seguimientos registrados.</p>
+        } @else {
+          <table mat-table [dataSource]="seguimientos" class="full-width">
+
+            <ng-container matColumnDef="Alias">
+              <th mat-header-cell *matHeaderCellDef>Alias</th>
+              <td mat-cell *matCellDef="let s">{{ s.Alias || '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Estatus">
+              <th mat-header-cell *matHeaderCellDef>Estatus</th>
+              <td mat-cell *matCellDef="let s">
+                <span class="status-chip status-{{ s.Estatus | lowercase }}">{{ s.Estatus }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Pokemon">
+              <th mat-header-cell *matHeaderCellDef>Pokémon asignado</th>
+              <td mat-cell *matCellDef="let s">
+                @if (s.PokemonId) {
+                  <div class="pokemon-cell">
+                    <img [src]="pokemonSvc.spriteUrl(s.PokemonId)" [alt]="s.PokemonNombre" class="pokemon-sprite">
+                    <span>{{ s.PokemonNombre }}</span>
+                  </div>
+                } @else {
+                  <span class="sin-pokemon">—</span>
+                }
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Observaciones">
+              <th mat-header-cell *matHeaderCellDef>Observaciones</th>
+              <td mat-cell *matCellDef="let s">{{ s.Observaciones || '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let s">
+                <button mat-icon-button (click)="abrirFormulario(s)" matTooltip="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="eliminar(s)" matTooltip="Eliminar">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnasSeguimientos"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnasSeguimientos;"></tr>
+          </table>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

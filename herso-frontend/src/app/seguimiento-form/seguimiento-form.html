@@ -1,0 +1,67 @@
+<h2 mat-dialog-title>{{ esEdicion ? 'Editar seguimiento' : 'Nuevo seguimiento' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="form-grid">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Alias</mat-label>
+      <input matInput formControlName="Alias" placeholder="Nombre interno del cliente">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Estatus</mat-label>
+      <mat-select formControlName="Estatus">
+        @for (op of estatusOpciones; track op) {
+          <mat-option [value]="op">{{ op }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Observaciones</mat-label>
+      <textarea matInput formControlName="Observaciones" rows="3" placeholder="Notas adicionales"></textarea>
+    </mat-form-field>
+
+    <div class="pokemon-section">
+      <div class="pokemon-label">
+        <mat-icon>catching_pokemon</mat-icon>
+        <span>Pokémon asignado <small>(nivel {{ data.clasificacion }})</small></span>
+      </div>
+
+      @if (cargandoPokemon) {
+        <div class="pokemon-loading">
+          <mat-spinner diameter="32"></mat-spinner>
+          <span>Buscando Pokémon...</span>
+        </div>
+      } @else if (pokemon) {
+        <div class="pokemon-preview">
+          <img [src]="pokemon.sprite" [alt]="pokemon.nombre" class="pokemon-sprite">
+          <div class="pokemon-info">
+            <span class="pokemon-name">{{ pokemon.nombre }}</span>
+            <span class="pokemon-id">#{{ pokemon.id }}</span>
+          </div>
+          <div class="pokemon-actions">
+            <button mat-stroked-button type="button" (click)="asignarPokemon()">
+              <mat-icon>refresh</mat-icon> Cambiar
+            </button>
+            <button mat-button type="button" (click)="quitarPokemon()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+      } @else {
+        <button mat-stroked-button type="button" (click)="asignarPokemon()" class="full-width">
+          <mat-icon>add</mat-icon> Asignar Pokémon automáticamente
+        </button>
+      }
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button (click)="guardar()" [disabled]="form.invalid || guardando">
+    {{ guardando ? 'Guardando...' : 'Guardar' }}
+  </button>
+</mat-dialog-actions>

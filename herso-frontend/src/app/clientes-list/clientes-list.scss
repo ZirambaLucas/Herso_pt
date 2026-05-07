@@ -1,0 +1,170 @@
+// ── Layout ──────────────────────────────────────────────────────
+.filters-card { margin-bottom: 16px; }
+
+.table-card {
+  .mat-mdc-card-content { padding: 0; }
+}
+
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+
+  mat-form-field { flex: 1; min-width: 180px; }
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+// ── Page header ──────────────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.results-count {
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+  padding-bottom: 4px;
+}
+
+// ── Table ────────────────────────────────────────────────────────
+.full-width { width: 100%; }
+
+// Header sutil
+tr.mat-mdc-header-row {
+  background: var(--mat-sys-surface-variant);
+}
+
+th.mat-mdc-header-cell {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// Números alineados a la derecha
+.num-header, .num-cell { text-align: right !important; }
+
+// Fecha con fuente mono para alineación
+.date-cell {
+  font-variant-numeric: tabular-nums;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 13px;
+}
+
+// Fila hover con acento izquierdo
+.row-hover {
+  transition: background 120ms ease;
+  border-left: 3px solid transparent;
+
+  &:hover {
+    background: var(--mat-sys-surface-variant);
+    border-left-color: var(--mat-sys-primary);
+    cursor: pointer;
+  }
+}
+
+.actions-cell { width: 48px; text-align: right; }
+
+// ── Avatar con inicial ───────────────────────────────────────────
+.client-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.client-name { font-weight: 500; }
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+  text-transform: uppercase;
+
+  &.tier-bronze { background: #d4956a; color: #fff; }
+  &.tier-silver { background: #98a8b8; color: #1e2d3d; }
+  &.tier-gold   { background: #ffaa00; color: #5a2d00; }
+}
+
+// ── Empty state ──────────────────────────────────────────────────
+.center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 16px;
+  gap: 10px;
+  color: var(--mat-sys-on-surface-variant);
+
+  .empty-icon { font-size: 40px; width: 40px; height: 40px; opacity: .4; }
+  p { margin: 0; font-size: 14px; }
+}
+
+// ── Badges de nivel ──────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &::before { font-size: 13px; line-height: 1; }
+
+  &.badge-bronze {
+    padding: 4px 11px;
+    background: linear-gradient(135deg, #d4956a 0%, #a0613a 100%);
+    color: #fff;
+    border: 1px solid #8c5030;
+    box-shadow: 0 1px 4px rgba(120, 60, 20, .25);
+    &::before { content: '●'; font-size: 8px; opacity: .75; }
+  }
+
+  &.badge-silver {
+    padding: 4px 12px;
+    background: linear-gradient(135deg, #dde2e8 0%, #98a8b8 100%);
+    color: #1e2d3d;
+    border: 1px solid #8fa0b0;
+    box-shadow: 0 2px 6px rgba(80, 100, 130, .25), inset 0 1px 0 rgba(255,255,255,.55);
+    &::before { content: '◆'; font-size: 9px; color: #4a6070; }
+  }
+
+  &.badge-gold {
+    padding: 5px 14px;
+    font-size: 12px;
+    background: linear-gradient(135deg, #ffe566 0%, #ffaa00 55%, #e07800 100%);
+    color: #5a2d00;
+    border: 1px solid #cc8800;
+    box-shadow: 0 2px 10px rgba(220, 150, 0, .45), inset 0 1px 0 rgba(255,255,255,.4);
+    &::before { content: '★'; font-size: 12px; color: #7a3d00; }
+  }
+}
