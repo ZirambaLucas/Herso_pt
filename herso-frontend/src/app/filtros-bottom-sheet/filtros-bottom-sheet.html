@@ -1,0 +1,48 @@
+<div class="bs-header">
+  <span class="bs-titulo">Filtros</span>
+  <button mat-icon-button (click)="cerrar()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<form [formGroup]="form" class="bs-form">
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Nombre</mat-label>
+    <mat-icon matPrefix>person_search</mat-icon>
+    <input matInput formControlName="nombre" maxlength="45" placeholder="Buscar por nombre"
+           (input)="filtrarNombre($event)">
+  </mat-form-field>
+
+  <div class="fecha-row">
+    <mat-form-field appearance="outline">
+      <mat-label>Fecha inicio</mat-label>
+      <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio">
+      <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+      <mat-datepicker #pickerInicio></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Fecha fin</mat-label>
+      <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin">
+      <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+      <mat-datepicker #pickerFin></mat-datepicker>
+    </mat-form-field>
+  </div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Monto total mínimo ($)</mat-label>
+    <input matInput formControlName="montoMin" inputmode="numeric"
+           (input)="formatearMonto($event)" placeholder="0">
+  </mat-form-field>
+
+</form>
+
+<div class="bs-actions">
+  <button mat-button (click)="limpiar()" [disabled]="!hayFiltros">
+    <mat-icon>clear</mat-icon> Limpiar
+  </button>
+  <button mat-flat-button (click)="aplicar()">
+    <mat-icon>search</mat-icon> Aplicar
+  </button>
+</div>

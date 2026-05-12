@@ -34,6 +34,21 @@ export class PokemonService {
     return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png`;
   }
 
+  listForTier(tier: string): Observable<{id: number; nombre: string}[]> {
+    const rangos: Record<string, {limit: number; offset: number}> = {
+      Bronze: { limit: 151, offset: 0   },
+      Silver: { limit: 235, offset: 151 },
+      Gold:   { limit: 263, offset: 386 },
+    };
+    const { limit, offset } = rangos[tier] ?? rangos['Bronze'];
+    return this.http.get<any>(`${this.base}/pokemon?limit=${limit}&offset=${offset}`).pipe(
+      map(res => (res.results as any[]).map((p: any) => ({
+        id:     Number(p.url.split('/').filter(Boolean).pop()),
+        nombre: p.name as string,
+      })))
+    );
+  }
+
   idForClient(customerId: number, tier: string): number {
     if (tier === 'Gold')   return (customerId % 263) + 387;
     if (tier === 'Silver') return (customerId % 235) + 152;

@@ -1,0 +1,54 @@
+<h2 mat-dialog-title class="picker-title">
+  <mat-icon>catching_pokemon</mat-icon>
+  Elige tu Pokémon
+  <span class="tier-badge tier-{{ tierClass }}">{{ data.tier }}</span>
+</h2>
+
+<div class="search-area">
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Buscar por nombre o número</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput [formControl]="busqueda" placeholder="Ej. pikachu, 25" autocomplete="off">
+  </mat-form-field>
+</div>
+
+<mat-dialog-content>
+  @if (cargando) {
+    <div class="estado-centro">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Cargando Pokémon...</p>
+    </div>
+  } @else if (filtrados.length === 0) {
+    <div class="estado-centro">
+      <mat-icon class="icon-vacio">search_off</mat-icon>
+      <p>Sin resultados</p>
+    </div>
+  } @else {
+    <div class="grid">
+      @for (p of filtrados; track p.id) {
+        <button
+          type="button"
+          class="pokemon-card"
+          [class.seleccionado]="seleccionado?.id === p.id"
+          (click)="seleccionar(p)">
+          <img [src]="spriteUrl(p.id)" [alt]="p.nombre" class="sprite">
+          <span class="nombre">{{ p.nombre }}</span>
+          <span class="num">#{{ p.id }}</span>
+        </button>
+      }
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button (click)="confirmar()" [disabled]="!seleccionado">
+    @if (seleccionado) {
+      <span class="btn-confirmar">
+        <mat-icon>check</mat-icon> {{ seleccionado.nombre }}
+      </span>
+    } @else {
+      Selecciona uno
+    }
+  </button>
+</mat-dialog-actions>

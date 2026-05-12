@@ -2,8 +2,11 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChang
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 
 import { routes } from './app.routes';
+import { paginatorEsIntl } from './paginator-es';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,5 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })),
     provideHttpClient(),
     provideAnimationsAsync(),
+    provideNativeDateAdapter(),
+    { provide: MatPaginatorIntl, useFactory: paginatorEsIntl },
   ]
 };

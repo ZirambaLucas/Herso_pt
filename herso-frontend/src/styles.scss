@@ -33,7 +33,11 @@ body {
   // Reset the user agent margin.
   margin: 0;
 }
-/* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other file styles */
+
+@media (max-width: 599px) {
+  .mat-mdc-dialog-content { overflow-x: hidden !important; }
+}
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
@@ -42,6 +46,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   max-width: 1200px;
   margin: 24px auto;
   padding: 0 16px;
+
+  @media (max-width: 599px) {
+    margin: 12px auto;
+    padding: 0 12px;
+  }
 }
 
 .full-width { width: 100%; }

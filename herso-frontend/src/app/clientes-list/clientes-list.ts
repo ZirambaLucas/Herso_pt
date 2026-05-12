@@ -2,7 +2,7 @@ import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime } from 'rxjs';
 import { DatePipe, CurrencyPipe, DecimalPipe, LowerCasePipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
@@ -14,8 +14,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatBadgeModule } from '@angular/material/badge';
 import { ApiService } from '../services/api.service';
 import { ClienteCompra } from '../models/cliente-compra.model';
+import { FiltrosBottomSheet, FiltrosResult } from '../filtros-bottom-sheet/filtros-bottom-sheet';
 
 interface AdvertenciaData { titulo: string; mensaje: string; }
 
@@ -43,7 +46,7 @@ export class AdvertenciaDialogComponent {
     ReactiveFormsModule, RouterLink, DatePipe, CurrencyPipe, DecimalPipe, LowerCasePipe,
     MatTableModule, MatCardModule, MatFormFieldModule, MatInputModule,
     MatButtonModule, MatIconModule, MatProgressSpinnerModule,
-    MatTooltipModule, MatPaginatorModule,
+    MatTooltipModule, MatPaginatorModule, MatBottomSheetModule, MatBadgeModule,
   ],
   templateUrl: './clientes-list.html',
   styleUrl: './clientes-list.scss',
@@ -62,6 +65,34 @@ export class ClientesListComponent implements OnInit, OnDestroy {
   fechaFinCtrl    = new FormControl('');
   montoMinCtrl    = new FormControl('');
 
+  get cantFiltrosActivos(): number {
+    return [
+      this.nombreCtrl.value?.trim(),
+      this.fechaInicioCtrl.value,
+      this.fechaFinCtrl.value,
+      this.montoMinCtrl.value,
+    ].filter(Boolean).length;
+  }
+
+  abrirFiltros(): void {
+    this.bottomSheet.open(FiltrosBottomSheet, {
+      data: {
+        nombre:      this.nombreCtrl.value      ?? '',
+        fechaInicio: this.fechaInicioCtrl.value ?? '',
+        fechaFin:    this.fechaFinCtrl.value    ?? '',
+        montoMin:    this.montoMinCtrl.value    ?? '',
+      },
+    }).afterDismissed().subscribe((result: FiltrosResult | undefined) => {
+      if (!result) return;
+      if (result.accion === 'limpiar') { this.limpiar(); return; }
+      this.nombreCtrl.setValue(result.nombre,      { emitEvent: false });
+      this.fechaInicioCtrl.setValue(result.fechaInicio, { emitEvent: false });
+      this.fechaFinCtrl.setValue(result.fechaFin,   { emitEvent: false });
+      this.montoMinCtrl.setValue(result.montoMin,   { emitEvent: false });
+      this.buscarExplicito();
+    });
+  }
+
   private get hayFiltros(): boolean {
     return !!(
       this.nombreCtrl.value?.trim() ||
@@ -71,12 +102,21 @@ export class ClientesListComponent implements OnInit, OnDestroy {
     );
   }
 
-  constructor(private api: ApiService, private dialog: MatDialog) {
+  constructor(
+    private api: ApiService,
+    private dialog: MatDialog,
+    private bottomSheet: MatBottomSheet,
+  ) {
     this.nombreCtrl.valueChanges.pipe(
       debounceTime(350),
-      distinctUntilChanged(),
       takeUntilDestroyed(),
-    ).subscribe(() => this.buscar(1));
+    ).subscribe((val) => {
+      const limpio = (val ?? '').replace(this.NOMBRE_REGEX, '');
+      if (limpio !== this.ultimaBusqueda) {
+        this.ultimaBusqueda = limpio;
+        this.buscar(1);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -87,7 +127,6 @@ export class ClientesListComponent implements OnInit, OnDestroy {
       this.fechaInicioCtrl.setValue(s.fechaInicio, { emitEvent: false });
       this.fechaFinCtrl.setValue(s.fechaFin, { emitEvent: false });
       this.montoMinCtrl.setValue(s.montoMin, { emitEvent: false });
-      this.porPagina = s.porPagina;
       this.buscar(s.pagina);
     } else {
       this.buscar();
@@ -97,12 +136,23 @@ export class ClientesListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     sessionStorage.setItem(STATE_KEY, JSON.stringify({
       pagina:      this.paginaActual,
-      porPagina:   this.porPagina,
       nombre:      this.nombreCtrl.value ?? '',
       fechaInicio: this.fechaInicioCtrl.value ?? '',
       fechaFin:    this.fechaFinCtrl.value ?? '',
       montoMin:    this.montoMinCtrl.value ?? '',
     }));
+  }
+
+  private readonly NOMBRE_REGEX = /[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑàèìòùÀÈÌÒÙ.,'\s]/g;
+  private ultimaBusqueda = '';
+
+  filtrarNombre(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const limpio = input.value.replace(this.NOMBRE_REGEX, '');
+    if (limpio !== input.value) {
+      input.value = limpio;
+      this.nombreCtrl.setValue(limpio, { emitEvent: true });
+    }
   }
 
   formatearMonto(event: Event): void {
@@ -145,7 +195,6 @@ export class ClientesListComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.clientes = res.data;
         this.totalRegistros = res.total;
-        this.porPagina = res.per_page;
         this.cargando = false;
       },
       error: () => { this.cargando = false; },

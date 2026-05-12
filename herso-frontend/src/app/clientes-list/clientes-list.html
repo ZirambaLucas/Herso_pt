@@ -10,13 +10,24 @@
     }
   </div>
 
+  <!-- Botón de filtros visible solo en móvil -->
+  <div class="mobile-filter-row">
+    <button mat-stroked-button (click)="abrirFiltros()"
+            [matBadge]="cantFiltrosActivos"
+            [matBadgeHidden]="cantFiltrosActivos === 0"
+            matBadgeColor="primary">
+      <mat-icon>tune</mat-icon> Filtros
+    </button>
+  </div>
+
+  <!-- Barra de filtros visible solo en tablet/desktop -->
   <mat-card class="filters-card">
     <mat-card-content>
       <div class="filters-row">
         <mat-form-field appearance="outline">
           <mat-label>Nombre</mat-label>
           <mat-icon matPrefix>person_search</mat-icon>
-          <input matInput [formControl]="nombreCtrl" placeholder="Buscar por nombre" maxlength="45" #nombreInput>
+          <input matInput [formControl]="nombreCtrl" placeholder="Buscar por nombre" maxlength="45" #nombreInput (input)="filtrarNombre($event)">
           <mat-hint align="end">{{ nombreInput.value.length }}/45</mat-hint>
         </mat-form-field>
 
@@ -32,7 +43,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Monto total mínimo ($)</mat-label>
-          <input matInput [formControl]="montoMinCtrl" placeholder="0" (input)="formatearMonto($event)" inputmode="numeric">
+          <input matInput [formControl]="montoMinCtrl" placeholder="0" (input)="formatearMonto($event)" (keydown.enter)="buscarExplicito()" inputmode="numeric">
         </mat-form-field>
 
         <div class="filter-actions">
@@ -108,12 +119,13 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-          <tr mat-row *matRowDef="let row; columns: columnas;" class="row-hover"></tr>
+          <tr mat-row *matRowDef="let row; columns: columnas;" class="row-hover" [routerLink]="['/clientes', row.CustomerID]"></tr>
         </table>
 
         <mat-paginator
           [length]="totalRegistros"
           [pageSize]="porPagina"
+          [pageIndex]="paginaActual - 1"
           [pageSizeOptions]="[10, 20, 30, 40, 50]"
           (page)="onPageChange($event)"
           showFirstLastButtons>

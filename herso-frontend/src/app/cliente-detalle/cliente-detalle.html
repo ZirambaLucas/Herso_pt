@@ -81,54 +81,44 @@
         @if (seguimientos.length === 0) {
           <p class="sin-registros">No hay seguimientos registrados.</p>
         } @else {
-          <table mat-table [dataSource]="seguimientos" class="full-width">
+          <div class="seguimientos-lista">
+            @for (s of seguimientos; track s.Id) {
+              <div class="seg-card">
 
-            <ng-container matColumnDef="Alias">
-              <th mat-header-cell *matHeaderCellDef>Alias</th>
-              <td mat-cell *matCellDef="let s">{{ s.Alias || '—' }}</td>
-            </ng-container>
+                <div class="seg-pokemon">
+                  @if (s.PokemonId) {
+                    <img [src]="pokemonSvc.spriteUrl(s.PokemonId)" [alt]="s.PokemonNombre" class="seg-sprite">
+                    <span class="seg-poke-nombre">{{ s.PokemonNombre }}</span>
+                    <span class="seg-poke-num">#{{ s.PokemonId }}</span>
+                  } @else {
+                    <div class="seg-sin-pokemon">
+                      <mat-icon>catching_pokemon</mat-icon>
+                    </div>
+                  }
+                </div>
 
-            <ng-container matColumnDef="Estatus">
-              <th mat-header-cell *matHeaderCellDef>Estatus</th>
-              <td mat-cell *matCellDef="let s">
-                <span class="status-chip status-{{ s.Estatus | lowercase }}">{{ s.Estatus }}</span>
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="Pokemon">
-              <th mat-header-cell *matHeaderCellDef>Pokémon asignado</th>
-              <td mat-cell *matCellDef="let s">
-                @if (s.PokemonId) {
-                  <div class="pokemon-cell">
-                    <img [src]="pokemonSvc.spriteUrl(s.PokemonId)" [alt]="s.PokemonNombre" class="pokemon-sprite">
-                    <span>{{ s.PokemonNombre }}</span>
+                <div class="seg-body">
+                  <div class="seg-top-row">
+                    <span class="seg-alias">{{ s.Alias || '—' }}</span>
+                    <span class="status-chip status-{{ s.Estatus | lowercase }}">{{ s.Estatus }}</span>
                   </div>
-                } @else {
-                  <span class="sin-pokemon">—</span>
-                }
-              </td>
-            </ng-container>
+                  @if (s.Observaciones) {
+                    <p class="seg-obs">{{ s.Observaciones }}</p>
+                  }
+                </div>
 
-            <ng-container matColumnDef="Observaciones">
-              <th mat-header-cell *matHeaderCellDef>Observaciones</th>
-              <td mat-cell *matCellDef="let s">{{ s.Observaciones || '—' }}</td>
-            </ng-container>
+                <div class="seg-acciones">
+                  <button mat-icon-button (click)="abrirFormulario(s)" matTooltip="Editar">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="eliminar(s)" matTooltip="Eliminar">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
 
-            <ng-container matColumnDef="acciones">
-              <th mat-header-cell *matHeaderCellDef></th>
-              <td mat-cell *matCellDef="let s">
-                <button mat-icon-button (click)="abrirFormulario(s)" matTooltip="Editar">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button color="warn" (click)="eliminar(s)" matTooltip="Eliminar">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="columnasSeguimientos"></tr>
-            <tr mat-row *matRowDef="let row; columns: columnasSeguimientos;"></tr>
-          </table>
+              </div>
+            }
+          </div>
         }
       </mat-card-content>
     </mat-card>

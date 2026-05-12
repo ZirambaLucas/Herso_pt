@@ -4,6 +4,12 @@
   gap: 8px;
   min-width: 440px;
   padding-top: 8px;
+
+  @media (max-width: 599px) {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 .pokemon-section {
@@ -61,5 +67,11 @@
 
 .pokemon-actions {
   display: flex;
-  gap: 4px;
+  gap: 0;
+}
+
+.pokemon-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
