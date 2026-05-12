@@ -79,3 +79,4 @@ La aplicación queda disponible en `http://localhost:4200`.
 - Exportación a Excel/XML de la lista de clientes filtrada.
 - Historial de cambios visible en la UI para cada seguimiento comercial.
 - Uso de AWS Services para optimización.
+- Mejora de identidad de la app web usando branding acorde a la empresa.
